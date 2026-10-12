@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Digital DNA — Keystroke Dynamics Biometric Authentication</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="cyber-background"></div>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+            <circle cx="12" cy="12" r="4"></circle>
+          </svg>
+        </div>
+        <div>
+          <h1>Personal Digital DNA <span class="module-text">Module 1</span></h1>
+          <p class="subtitle">Keystroke Dynamics Biometric Authentication Engine</p>
+        </div>
+      </div>
+      <div class="system-status">
+        <span class="status-pulse"></span>
+        <span class="status-label">Biometric sensor: <strong id="sensorStatus">Active (Zero-content logging)</strong></span>
+      </div>
+    </header>
+
+    <!-- Privacy Banner -->
+    <div class="privacy-banner">
+      <div class="privacy-icon">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <div class="privacy-text">
+        <strong>Zero-knowledge keystroke privacy:</strong> Only microsecond timing intervals (<code>keydown</code> & <code>keyup</code> durations) are captured. The actual characters typed are never logged, inspected, or transmitted to the server.
+      </div>
+    </div>
+
+    <!-- Main Navigation Tabs -->
+    <div class="nav-tabs" role="tablist">
+      <button class="tab-btn active" id="tabEnrollBtn" onclick="switchTab('enroll')">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7.5" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+        Enroll Profile
+      </button>
+      <button class="tab-btn" id="tabVerifyBtn" onclick="switchTab('verify')">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Verify Identity
+      </button>
+      <button class="tab-btn" id="tabContinuousBtn" onclick="switchTab('continuous')">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        Continuous Auth
+      </button>
+    </div>
+
+    <!-- TAB 1: ENROLLMENT -->
+    <section id="enrollSection" class="tab-panel active">
+      <div class="card">
+        <div class="card-header">
+          <h2>Biometric Profile Enrollment</h2>
+          <p>Collect typing samples to train your customized One-Class SVM and Isolation Forest anomaly detection models.</p>
+        </div>
+
+        <div class="form-group">
+          <label for="enrollUsername">Username</label>
+          <input type="text" id="enrollUsername" class="form-control" placeholder="Enter unique username (e.g., alice_smith)" autocomplete="off">
+        </div>
+
+        <!-- Sample Progress Steps -->
+        <div class="samples-tracker">
+          <div class="tracker-header">
+            <span>Collected samples (<span id="sampleCounter">0</span> / 4 required)</span>
+            <button class="btn-link" onclick="resetEnrollmentSamples()">Clear Samples</button>
+          </div>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="sampleProgressBar" style="width: 0%;"></div>
+          </div>
+          <div class="sample-pills" id="samplePills">
+            <div class="sample-pill" id="pill-1">Sample 1</div>
+            <div class="sample-pill" id="pill-2">Sample 2</div>
+            <div class="sample-pill" id="pill-3">Sample 3</div>
+            <div class="sample-pill" id="pill-4">Sample 4</div>
+          </div>
+        </div>
+
+        <!-- Sentence Prompt -->
+        <div class="prompt-box">
+          <div class="prompt-label">Type the sentence below at your normal pace:</div>
+          <div class="prompt-sentence" id="enrollPromptText">The quick brown fox jumps over the lazy dog to verify cybersecurity patterns.</div>
+          <div class="prompt-actions">
+            <button class="btn-ghost-sm" onclick="cyclePrompt()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+              Next Prompt
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-telemetry">
+            <label for="enrollInput">Type here naturally</label>
+            <div class="telemetry-hud" id="enrollHud">Events: 0 | Live CPM: 0</div>
+          </div>
+          <textarea id="enrollInput" class="form-control keystroke-field" rows="3" placeholder="Click here and begin typing naturally at your normal rhythm..."></textarea>
+        </div>
+
+        <!-- Live Dynamics Rhythm Visualizer -->
+        <div class="rhythm-visualizer-container">
+          <div class="visualizer-header">
+            <span>Live keystroke rhythm stream</span>
+            <span class="anonymized-tag">Timing payload only</span>
+          </div>
+          <div class="rhythm-stream" id="enrollRhythmStream">
+            <div class="placeholder-stream">Start typing to see raw timing pulses (dwell & flight vectors)...</div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button id="addSampleBtn" class="btn btn-secondary" onclick="recordCurrentSample()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Record sample (<span id="sampleBtnCount">0</span>/4)
+          </button>
+          <button id="submitEnrollBtn" class="btn btn-primary" onclick="submitEnrollment()" disabled>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            Train & save biometric models
+          </button>
+        </div>
+
+        <div id="enrollMessage" class="feedback-message"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: VERIFICATION -->
+    <section id="verifySection" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <h2>Biometric Identity Verification</h2>
+          <p>Type the verification phrase to authenticate against your Digital DNA profile.</p>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label for="verifyUsername">Username</label>
+            <input type="text" id="verifyUsername" class="form-control" placeholder="Enter enrolled username" autocomplete="off">
+          </div>
+          <div class="form-group flex-1">
+            <label for="modelSelect">Biometric classifier</label>
+            <select id="modelSelect" class="form-control">
+              <option value="ocsvm">One-Class SVM (Recommended)</option>
+              <option value="iforest">Isolation Forest</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="prompt-box">
+          <div class="prompt-label">Reference verification sentence:</div>
+          <div class="prompt-sentence" id="verifyPromptText">Keystroke dynamics establish non-intrusive biometric identity verification.</div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-telemetry">
+            <label for="verifyInput">Verification input</label>
+            <div class="telemetry-hud" id="verifyHud">Events: 0 | Live CPM: 0</div>
+          </div>
+          <textarea id="verifyInput" class="form-control keystroke-field" rows="3" placeholder="Type the sentence above naturally..."></textarea>
+        </div>
+
+        <!-- Live Stream for Verification -->
+        <div class="rhythm-visualizer-container">
+          <div class="visualizer-header">
+            <span>Live dynamics stream</span>
+            <span class="anonymized-tag">Event log (clean numeric timestamps)</span>
+          </div>
+          <div class="rhythm-stream" id="verifyRhythmStream">
+            <div class="placeholder-stream">Awaiting keystrokes...</div>
+          </div>
+        </div>
+
+        <div class="action-row">
+          <button id="verifySubmitBtn" class="btn btn-primary" onclick="submitVerification()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>
+            Verify biometric signature
+          </button>
+          <button class="btn btn-ghost" onclick="clearVerifyField()">Clear input</button>
+        </div>
+
+        <!-- Verification Results Dashboard -->
+        <div id="verifyResultCard" class="result-card hidden">
+          <div class="result-header">
+            <div class="verdict-wrapper">
+              <span class="result-title">Biometric verdict:</span>
+              <div id="verdictBadge" class="verdict-badge verdict-genuine">Genuine</div>
+            </div>
+            <div class="model-used-tag" id="resultModelTag">Model: One-Class SVM</div>
+          </div>
+
+          <!-- Confidence Meter -->
+          <div class="confidence-section">
+            <div class="confidence-header">
+              <span>Biometric confidence score</span>
+              <span id="confidencePercentage" class="confidence-value">94.2%</span>
+            </div>
+            <div class="confidence-track">
+              <div id="confidenceBar" class="confidence-fill fill-genuine" style="width: 94.2%;"></div>
+              <div class="threshold-marker marker-suspicious" style="left: 30%;" title="Suspicious Threshold (<30%)"></div>
+              <div class="threshold-marker marker-genuine" style="left: 85%;" title="Genuine Threshold (>85%)"></div>
+            </div>
+            <div class="threshold-labels">
+              <span class="label-suspicious">0% — Suspicious (&lt;30%)</span>
+              <span class="label-uncertain">Step-up required (30% - 85%)</span>
+              <span class="label-genuine">Genuine (&gt;85%) — 100%</span>
+            </div>
+          </div>
+
+          <!-- Explainability Layer -->
+          <div class="explainability-card">
+            <div class="explainability-title">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              Explainable AI (XAI) keystroke feature diagnostics
+            </div>
+            <p id="explainSummary" class="explain-summary">
+              Typing dynamics align tightly with your enrolled biometric baseline profile.
+            </p>
+            <div class="feature-divergence-list" id="featureDivergenceList">
+              <!-- Dynamically populated top 2-3 deviating features -->
+            </div>
+          </div>
+
+          <!-- Step-up Verification inline prompt (appears when uncertain) -->
+          <div id="stepUpAuthContainer" class="step-up-card hidden">
+            <div class="step-up-header">
+              <div class="step-up-icon">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+              </div>
+              <div>
+                <h4>Step-up verification required</h4>
+                <p>Confidence is in the uncertain range (30% - 85%). Please confirm your backup password.</p>
+              </div>
+            </div>
+            <div class="step-up-form">
+              <input type="password" id="stepUpPassword" class="form-control" placeholder="Enter account password">
+              <button class="btn btn-secondary" onclick="submitStepUp()">Confirm</button>
+            </div>
+            <div id="stepUpFeedback" class="feedback-message"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 3: CONTINUOUS AUTHENTICATION (SIMULATED) -->
+    <section id="continuousSection" class="tab-panel">
+      <div class="card">
+        <div class="card-header">
+          <h2>Continuous Session Monitoring (Simulated)</h2>
+          <p>Simulates continuous background biometric evaluation during active typing. Detects mid-session identity takeover if the typing cadence changes.</p>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-2">
+            <label for="continuousUsername">Active session user</label>
+            <input type="text" id="continuousUsername" class="form-control" placeholder="Enter enrolled username" autocomplete="off">
+          </div>
+          <div class="form-group flex-1">
+            <label>Continuous engine</label>
+            <button id="toggleContinuousBtn" class="btn btn-secondary btn-block" onclick="toggleContinuousMonitoring()">
+              Start continuous session
+            </button>
+          </div>
+        </div>
+
+        <!-- Session Status Dashboard -->
+        <div class="session-hud">
+          <div class="hud-item">
+            <span class="hud-label">Session status</span>
+            <span id="sessionStatusBadge" class="hud-value status-idle">Standby</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">Window buffer</span>
+            <span id="hudKeyCount" class="hud-value">0 keys</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">Current confidence</span>
+            <span id="hudConfidence" class="hud-value">--</span>
+          </div>
+          <div class="hud-item">
+            <span class="hud-label">Drift status</span>
+            <span id="hudDrift" class="hud-value">Normal</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="label-with-telemetry">
+            <label for="continuousInput">Active workspace (free typing area)</label>
+            <div class="telemetry-hud" id="continuousHud">Interval evaluation every 30 keystrokes</div>
+          </div>
+          <textarea id="continuousInput" class="form-control keystroke-field" rows="5" placeholder="Type continuously here (or simulate a colleague taking over the keyboard) to watch the live anomaly detection monitor..."></textarea>
+        </div>
+
+        <!-- Live Continuous Timeline / Alert -->
+        <div id="continuousAlertBox" class="alert-box alert-hidden">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-content">
+            <strong id="alertTitle">Session alert</strong>
+            <p id="alertDesc">Biometric confidence dropped mid-session. Potential unauthorized user takeover detected!</p>
+          </div>
+        </div>
+
+        <div class="continuous-timeline-wrapper">
+          <div class="timeline-title">Session biometric verification log</div>
+          <div class="timeline-container" id="continuousLog">
+            <div class="timeline-empty">Start continuous session and type above to stream real-time evaluations.</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div>Module 1: Keystroke Dynamics • Digital DNA Biometrics • Zero Content Stored</div>
+      <div>Backend API: <span id="apiHealthBadge" class="badge-healthy">FastAPI Local</span></div>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
